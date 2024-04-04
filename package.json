@@ -1,0 +1,19 @@
+{
+  "name": "restapijoe",
+  "version": "1.0.0",
+  "description": "rest crud",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joecordero1/restCRUD.git"
+  },
+  "author": "joecordero1",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joecordero1/restCRUD/issues"
+  },
+  "homepage": "https://github.com/joecordero1/restCRUD#readme"
+}
