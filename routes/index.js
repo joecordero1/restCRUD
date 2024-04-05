@@ -7,7 +7,13 @@ module.exports = function() {
     // Agrega una nueva ruta para crear un cliente.
     router.post('/clientes', clienteController.nuevoCliente);
 
-    // Puedes agregar más rutas aquí.
+    router.get('/clientes', clienteController.mostrarClientes);
+
+    router.get('/clientes/:_id', clienteController.mostrarClienteID);
+
+    router.put('/clientes/:_id', clienteController.updateCliente);
+
+    router.delete('/clientes/:_id', clienteController.deleteCliente);
 
     return router;
 }
