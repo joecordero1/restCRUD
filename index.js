@@ -3,6 +3,9 @@ const routes = require('./routes');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
+//importar cors para cambiar los recursos entre el react y el server de extress
+const cors = require('cors');
+
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://127.0.0.1:27017/restapicrud')
     .then(() => console.log("MongoDB Connected"))
@@ -14,6 +17,10 @@ const app = express();
 // instead of the body-parser package, as it has been re-included in Express.
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+//habilitar cors
+app.use(cors());
+
 
 // Use the routes defined in the routes file.
 app.use('/', routes());

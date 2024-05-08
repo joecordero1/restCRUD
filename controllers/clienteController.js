@@ -1,6 +1,6 @@
 const Clientes = require('../models/Clientes');
 
-exports.nuevoCliente = async (req, res) => {
+exports.nuevoCliente = async (req, res, next) => {
     // Instanciar un objeto Cliente con los datos de req.body
     const cliente = new Clientes(req.body);
 
