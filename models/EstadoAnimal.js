@@ -7,15 +7,17 @@ const detalleEstadoSchema = new Schema({
         required: true
     },
     valor: {
-        type: String,
-        required: true
+        type: String
     }
 });
 
 const estadoAnimalSchema = new Schema({
+    estado: {
+        type: Schema.Types.ObjectId,
+        ref: 'EstadoAnimal'
+    },
     nombre: {
-        type: String,
-        required: true
+        type: String
     },
     detalles: [detalleEstadoSchema]
 });

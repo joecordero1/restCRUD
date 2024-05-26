@@ -17,8 +17,10 @@ const auth = require('../middleware/auth');
 module.exports = function() {
     // Rutas para animales
     router.post('/animales', auth, animalController.nuevoAnimal);
+    router.post('/animales/anadir-estado/:_id', auth, animalController.agregarEstadoAnimal);
+    router.post('/animales/anadir-intervencion/:_id', auth, animalController.agregarEstadoAnimal);
     router.get('/animales', animalController.mostrarAnimales);
-    router.get('/animales/:_id', auth, animalController.mostrarAnimalPorId);
+    router.get('/animales/:_id', animalController.mostrarAnimalPorId);
     router.put('/animales/:_id', auth, animalController.actualizarAnimal);
     router.delete('/animales/:_id', auth, animalController.eliminarAnimal);
 
@@ -46,7 +48,7 @@ module.exports = function() {
     // Rutas para estados de animales
     router.post('/estados-animal', estadoAnimalController.nuevoEstadoAnimal);
     router.get('/estados-animal', estadoAnimalController.mostrarEstadosAnimal);
-    router.get('/estados-animal/:_id', auth, estadoAnimalController.mostrarEstadoAnimalPorId);
+    router.get('/estados-animal/:_id', estadoAnimalController.mostrarEstadoAnimalPorId);
     router.put('/estados-animal/:_id', auth, estadoAnimalController.actualizarEstadoAnimal);
     router.delete('/estados-animal/:_id', auth, estadoAnimalController.eliminarEstadoAnimal);
 

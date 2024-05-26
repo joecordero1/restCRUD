@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const EstadoAnimal = require('./EstadoAnimal');
 const Schema = mongoose.Schema;
 
 const animalSchema = new Schema({
@@ -12,10 +13,7 @@ const animalSchema = new Schema({
         ref: 'Raza',
         required: true
     },
-    estados: [{
-        type: Schema.Types.ObjectId,
-        ref: 'EstadoAnimal'
-    }],
+    estados: [],
     ubicacion: {
         type: {
             type: String,
