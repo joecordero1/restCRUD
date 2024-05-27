@@ -9,6 +9,7 @@ const estadoAnimalController = require('../controllers/estadoAnimalController');
 const intervencionController = require('../controllers/intervencionController');
 //const detalleEstadoController = require('../controllers/detalleEstadoController');
 const saludAnimalController = require('../controllers/saludAnimalController');
+const analisisController = require('../controllers/analisisController'); // analisis controlador
 
 // Middleware para proteger las rutas
 const auth = require('../middleware/auth');
@@ -18,7 +19,7 @@ module.exports = function() {
     // Rutas para animales
     router.post('/animales', auth, animalController.nuevoAnimal);
     router.post('/animales/anadir-estado/:_id', auth, animalController.agregarEstadoAnimal);
-    router.post('/animales/anadir-intervencion/:_id', auth, animalController.agregarEstadoAnimal);
+    router.post('/animales/anadir-intervencion/:_id', auth, animalController.agregarIntervencion);
     router.get('/animales', animalController.mostrarAnimales);
     router.get('/animales/:_id', animalController.mostrarAnimalPorId);
     router.put('/animales/:_id', auth, animalController.actualizarAnimal);
@@ -70,6 +71,7 @@ module.exports = function() {
     // Rutas para usuarios
     router.post('/crear-cuenta', usuariosController.registrarUsuario);
     router.post('/iniciar-sesion', usuariosController.autenticarUsuario);
+    router.get('/usuarios', usuariosController.mostrarUsuarios);
 
     // Rutas para intervenciones
     router.post('/intervenciones', intervencionController.nuevaIntervencion);
@@ -77,6 +79,31 @@ module.exports = function() {
     router.get('/intervenciones/:id', auth, intervencionController.obtenerIntervencionPorId);
     router.put('/intervenciones/:id', auth, intervencionController.actualizarIntervencion);
     router.delete('/intervenciones/:id', auth, intervencionController.eliminarIntervencion);
+
+    // Rutas para análisis
+    router.get('/analisis/mejoras/:fechaInicio/:fechaFin', async (req, res) => {
+        const { fechaInicio, fechaFin } = req.params;
+        try {
+            const mejoras = await analisisController.calcularMejorasAnuales(new Date(fechaInicio), new Date(fechaFin));
+            res.json(mejoras);
+        } catch (error) {
+            console.error('Error en la ruta /analisis/mejoras:', error);
+            res.status(500).json({ mensaje: 'Hubo un error al calcular las mejoras anuales' });
+        }
+    });
+
+    router.get('/analisis/comparacion/:ano', async (req, res) => {
+        const { ano } = req.params;
+        try {
+            const comparacion = await analisisController.compararMejorasCiudadVecina(parseInt(ano));
+            res.json(comparacion);
+        } catch (error) {
+            console.error('Error en la ruta /analisis/comparacion:', error);
+            res.status(500).json({ mensaje: 'Hubo un error al comparar las mejoras anuales con la ciudad vecina' });
+        }
+    });
+
+
 
 
     return router;

@@ -42,10 +42,9 @@ exports.agregarIntervencion = async (req, res, next) => {
         // Verificar que el animal existe
         const animal = await Animal.findById(Id_Animal);
         if (!animal) {
-            res.json({ mensaje: 'No existe ese animal' });
-            return next();
+            return res.status(404).json({ mensaje: 'No existe ese animal' });
         }
-
+    
         // Crear la nueva intervención
         const nuevaIntervencion = new Intervencion({
             Id_Animal,
@@ -56,16 +55,16 @@ exports.agregarIntervencion = async (req, res, next) => {
             resultadoDespues,
             comentarios
         });
-
+    
         // Guardar la intervención en la base de datos
         await nuevaIntervencion.save();
-
+    
         res.json({ mensaje: 'Intervención agregada exitosamente' });
     } catch (error) {
         console.log(error);
-        res.send(error);
+        res.status(500).json({ mensaje: 'Hubo un error' });
         next();
-    }
+    }    
 };
 
 
