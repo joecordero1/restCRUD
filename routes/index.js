@@ -53,14 +53,6 @@ module.exports = function() {
     router.put('/estados-animal/:_id', auth, estadoAnimalController.actualizarEstadoAnimal);
     router.delete('/estados-animal/:_id', auth, estadoAnimalController.eliminarEstadoAnimal);
 
-    /* Rutas para detalles de estado
-    router.post('/detalles-estado', detalleEstadoController.nuevoDetalleEstado);
-    router.get('/detalles-estado', detalleEstadoController.mostrarDetallesEstado);
-    router.get('/detalles-estado/:_id', auth, detalleEstadoController.mostrarDetalleEstadoPorId);
-    router.put('/detalles-estado/:_id', auth, detalleEstadoController.actualizarDetalleEstado);
-    router.delete('/detalles-estado/:_id', auth, detalleEstadoController.eliminarDetalleEstado);
-    */
-
     // Rutas para salud de animales
     router.post('/salud-animal', saludAnimalController.nuevaSaludAnimal);
     router.get('/salud-animal', saludAnimalController.mostrarSaludAnimal);
@@ -103,7 +95,40 @@ module.exports = function() {
         }
     });
 
+    //segmentacion
+    router.get('/analisis/segmentacion/:criterio', async (req, res) => {
+        const { criterio } = req.params;
+        try {
+            const segmentacion = await analisisController.segmentarDatosPorCriterio(criterio);
+            res.json(segmentacion);
+        } catch (error) {
+            console.error('Error en la ruta /analisis/segmentacion:', error);
+            res.status(500).json({ mensaje: 'Hubo un error al segmentar los datos' });
+        }
+    });
 
+    // Rutas para análisis sectorial y temporal
+    router.get('/analisis/sectorial/:fechaInicio/:fechaFin', async (req, res) => {
+        const { fechaInicio, fechaFin } = req.params;
+        try {
+            const resultados = await analisisController.analisisSectorialYTemporal(new Date(fechaInicio), new Date(fechaFin));
+            res.json(resultados);
+        } catch (error) {
+            console.error('Error en la ruta /analisis/sectorial:', error);
+            res.status(500).json({ mensaje: 'Hubo un error al realizar el análisis sectorial y temporal' });
+        }
+    });
+    //rutas dashboard mensual
+    router.get('/analisis/sector/:sector/:fechaInicio/:fechaFin', async (req, res) => {
+        const { sector, fechaInicio, fechaFin } = req.params;
+        try {
+            const resultados = await analisisController.calcularMejorasPorSector(new Date(fechaInicio), new Date(fechaFin), sector);
+            res.json(resultados);
+        } catch (error) {
+            console.error('Error en la ruta /analisis/sector:', error);
+            res.status(500).json({ mensaje: 'Hubo un error al calcular las mejoras por sector' });
+        }
+    });
 
 
     return router;
