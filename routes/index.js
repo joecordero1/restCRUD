@@ -10,6 +10,7 @@ const intervencionController = require('../controllers/intervencionController');
 //const detalleEstadoController = require('../controllers/detalleEstadoController');
 const saludAnimalController = require('../controllers/saludAnimalController');
 const analisisController = require('../controllers/analisisController'); // analisis controlador
+const { keycloak } = require('../middleware/keycloak');
 
 // Middleware para proteger las rutas
 const auth = require('../middleware/auth');
@@ -17,13 +18,13 @@ const auth = require('../middleware/auth');
 // Aquí defines las rutas de tu API.
 module.exports = function() {
     // Rutas para animales
-    router.post('/animales', auth, animalController.nuevoAnimal);
-    router.post('/animales/anadir-estado/:_id', auth, animalController.agregarEstadoAnimal);
-    router.post('/animales/anadir-intervencion/:_id', auth, animalController.agregarIntervencion);
-    router.get('/animales', animalController.mostrarAnimales);
+    router.post('/animales', keycloak.protect(), animalController.nuevoAnimal);
+    router.post('/animales/anadir-estado/:_id',  animalController.agregarEstadoAnimal);
+    router.post('/animales/anadir-intervencion/:_id',  animalController.agregarIntervencion);
+    router.get('/animales', keycloak.protect(), animalController.mostrarAnimales);
     router.get('/animales/:_id', animalController.mostrarAnimalPorId);
-    router.put('/animales/:_id', auth, animalController.actualizarAnimal);
-    router.delete('/animales/:_id', auth, animalController.eliminarAnimal);
+    router.put('/animales/:_id',  animalController.actualizarAnimal);
+    router.delete('/animales/:_id',  animalController.eliminarAnimal);
 
     // Rutas para razas
     router.post('/razas', razaController.nuevaRaza);

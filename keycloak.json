@@ -1,0 +1,8 @@
+{
+  "realm": "master",
+  "auth-server-url": "http://localhost:8080/",
+  "ssl-required": "external",
+  "resource": "sistema-a-backend",
+  "public-client": true,
+  "confidential-port": 0
+}
