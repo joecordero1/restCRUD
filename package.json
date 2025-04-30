@@ -4,7 +4,8 @@
   "description": "rest crud",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./index.js"
+    "start": "nodemon ./index.js",
+    "test": "echo \"No hay pruebas aún\" && exit 0"
   },
   "repository": {
     "type": "git",
