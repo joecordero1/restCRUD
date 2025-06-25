@@ -13,11 +13,11 @@ jobs:
       - name: Clonar repositorio
         uses: actions/checkout@v4
 
-      - name: Ejecutar Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: "p/ci"         # Reglas predefinidas para CI
-          generateSarif: true    # Para ver en Security tab
+      - name: Instalar Semgrep
+        run: pip install semgrep
+
+      - name: Ejecutar Semgrep con reglas de CI
+        run: semgrep --config p/ci --sarif --output semgrep.sarif
 
       - name: Subir reporte SARIF
         uses: github/codeql-action/upload-sarif@v2
