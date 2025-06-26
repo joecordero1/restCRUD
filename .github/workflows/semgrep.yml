@@ -17,9 +17,4 @@ jobs:
         run: pip install semgrep
 
       - name: Ejecutar Semgrep con reglas de CI
-        run: semgrep --config p/ci --sarif --output semgrep.sarif
-
-      - name: Subir reporte SARIF
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: semgrep.sarif
+        run: semgrep --config p/ci
