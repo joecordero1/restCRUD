@@ -17,5 +17,5 @@ jobs:
         run: pip install semgrep
 
       - name: Ejecutar Semgrep con reglas de CI
-      - run: semgrep --config p/ci --error
+        run: semgrep --config p/ci --error
 

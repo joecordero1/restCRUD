@@ -1,3 +1,4 @@
+require('dotenv').config();   // ← 1ª línea del archivo
 const express = require('express');
 const routes = require('./routes');
 const mongoose = require('mongoose');
@@ -16,7 +17,7 @@ const app = express();
 // Configurar sesiones
 app.use(
   session({
-    secret: 'clave-secreta',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     store: memoryStore,
