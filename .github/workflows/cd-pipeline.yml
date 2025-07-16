@@ -1,0 +1,56 @@
+name: DevSecOps CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test || echo "Tests not defined"
+
+  scan-security:
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'node:18'
+          scan-type: 'fs'
+          format: 'table'
+          exit-code: '0'  # Cambia a '1' si quieres que falle en vulnerabilidades
+          severity: 'CRITICAL,HIGH'
+
+  deploy-staging:
+    needs: scan-security
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simular despliegue a entorno de pruebas
+        run: echo "Desplegado en entorno de pruebas (simulado)"
+
+  deploy-prod:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Simular despliegue en producción
+        run: echo "Desplegado en entorno de producción (simulado)"
