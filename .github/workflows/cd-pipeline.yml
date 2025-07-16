@@ -21,8 +21,42 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
-        run: npm test || echo "Tests not defined"
+      - name: Run ESLint
+        run: |
+          npx eslint . --ext .js,.ts || echo "Lint warnings present"
+
+      - name: Simulate Health Check
+        run: |
+          echo "Simulando test de salud"
+          curl --fail http://localhost:3000/api || echo "API no disponible (simulación)"
+
+      - name: Run tests (placeholder)
+        run: npm test || echo "Tests no definidos"
+
+  sonar-analysis:
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          organization: your-org-name
+          projectKey: your-project-key
+          token: ${{ secrets.SONAR_TOKEN }}
 
   scan-security:
     needs: build-test
@@ -35,17 +69,34 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: '.'  # Escanea el código actual
+          scan-ref: '.'
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
+      
+      - name: Save Trivy result to file
+        run: trivy fs . > trivy-results.txt || true
+
+      - name: Upload Trivy report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-scan-report
+          path: trivy-results.txt
 
   deploy-staging:
-    needs: scan-security
+    needs: [scan-security, sonar-analysis]
     runs-on: ubuntu-latest
     steps:
-      - name: Simular despliegue a entorno de pruebas
-        run: echo "Desplegado en entorno de pruebas (simulado)"
+      - name: Validar políticas de despliegue
+        run: |
+          echo "Verificando políticas de despliegue..."
+          if [ ! -f .approved ]; then
+            echo "Falta archivo de aprobación. Abortando."
+            exit 1
+          fi
+
+      - name: Simular despliegue en entorno de pruebas
+        run: echo "✔ Desplegado en entorno de pruebas (simulado)"
 
   deploy-prod:
     needs: deploy-staging
@@ -53,4 +104,9 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Simular despliegue en producción
-        run: echo "Desplegado en entorno de producción (simulado)"
+        run: echo "✔ Desplegado en producción (simulado)"
+
+      - name: Simular monitoreo post-deploy
+        run: |
+          echo "🔍 Iniciando monitoreo post-despliegue..."
+          echo "Simulación de logs, métricas y alertas generadas automáticamente."
