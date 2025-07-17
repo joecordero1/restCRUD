@@ -163,23 +163,44 @@ jobs:
           name: trivy-docker-image-scan
           path: trivy-docker-image-report.txt
 
-  monitoring:
-    needs: scan-docker-image
+  deploy-k8s:
+    needs: deploy-staging
     runs-on: ubuntu-latest
     steps:
-      - name: Monitorizar contenedor Docker en tiempo real
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Kind cluster
+        uses: helm/kind-action@v1.9.0
+
+      - name: Load Docker image into Kind
         run: |
-          echo "📡 Monitoreando contenedor activo..."
-          echo "⚙️ Estado del contenedor:"
-          docker ps --filter "name=restcrud-sim"
+          docker build -t restcrud-app:latest .
+          kind load docker-image restcrud-app:latest
 
-          echo "📈 Métricas de uso (CPU/Memoria):"
-          docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl rollout status deployment/restcrud-app --timeout=90s
+          kubectl get pods
 
-          echo "📄 Últimos logs del contenedor:"
-          docker logs restcrud-sim --tail 20
+      - name: Deploy Prometheus & Grafana (monitoring stack)
+        run: |
+          kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
+          # O usa tus propios manifests/kustomize/Helm charts
 
-          echo "🌐 Verificando disponibilidad API:"
-          curl -i http://localhost:3000/api || echo "⚠️ La API no responde"
+      - name: Expose Prometheus port
+        run: |
+          kubectl port-forward svc/prometheus-operated 9090:9090 &
+          sleep 15
 
-          echo "🟢 Monitoreo continuo ejecutado correctamente"
+      - name: Consultar métrica de Prometheus
+        run: |
+          curl -s http://localhost:9090/api/v1/targets
+          # O una query, por ejemplo:
+          curl -s "http://localhost:9090/api/v1/query?query=up"
+
+      - name: Extra - Ver logs y status
+        run: |
+          kubectl get all
+          kubectl logs $(kubectl get pods -l app=restcrud-app -o jsonpath="{.items[0].metadata.name}")
