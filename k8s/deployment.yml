@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restcrud-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restcrud-app
+  template:
+    metadata:
+      labels:
+        app: restcrud-app
+    spec:
+      containers:
+        - name: restcrud-app
+          image: restcrud-app:latest
+          ports:
+            - containerPort: 3000
