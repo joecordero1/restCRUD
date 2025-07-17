@@ -162,3 +162,24 @@ jobs:
         with:
           name: trivy-docker-image-scan
           path: trivy-docker-image-report.txt
+
+  monitoring:
+    needs: scan-docker-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Monitorizar contenedor Docker en tiempo real
+        run: |
+          echo "📡 Monitoreando contenedor activo..."
+          echo "⚙️ Estado del contenedor:"
+          docker ps --filter "name=restcrud-sim"
+
+          echo "📈 Métricas de uso (CPU/Memoria):"
+          docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+
+          echo "📄 Últimos logs del contenedor:"
+          docker logs restcrud-sim --tail 20
+
+          echo "🌐 Verificando disponibilidad API:"
+          curl -i http://localhost:3000/api || echo "⚠️ La API no responde"
+
+          echo "🟢 Monitoreo continuo ejecutado correctamente"
