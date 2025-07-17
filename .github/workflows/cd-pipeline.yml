@@ -86,16 +86,24 @@ jobs:
     needs: [scan-security, sonar-analysis]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Mostrar contenido del directorio actual (debug)
+        run: ls -la $GITHUB_WORKSPACE
+
       - name: Validar políticas de despliegue
         run: |
           echo "Verificando políticas de despliegue....."
-          if [ ! -f .approved ]; then
-            echo "Falta archivo de aprobación. Abortando."
+          if [ ! -f "$GITHUB_WORKSPACE/.approved" ]; then
+            echo "❌ Falta archivo de aprobación. Abortando."
             exit 1
           fi
+          echo "✔ Archivo de aprobación encontrado."
 
       - name: Simular despliegue en entorno de pruebas
         run: echo "✔ Desplegado en entorno de pruebas (simulado)"
+
 
   deploy-prod:
     needs: deploy-staging
