@@ -193,6 +193,17 @@ jobs:
           kubectl rollout status deployment/restcrud-app --timeout=90s
           kubectl get pods
 
+      # Paso de debugging cuando el deploy falle
+      - name: Mostrar estado y logs de los pods
+        if: failure() # Solo si algún paso falla
+        run: |
+          echo "------ Estado general de pods ------"
+          kubectl get pods -o wide
+          echo "------ Descripción completa del pod ------"
+          kubectl describe pods
+          echo "------ Logs del contenedor ------"
+          kubectl logs $(kubectl get pods -l app=restcrud-app -o jsonpath="{.items[0].metadata.name}")
+
       - name: Deploy Prometheus & Grafana (monitoring stack)
         run: |
           kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
