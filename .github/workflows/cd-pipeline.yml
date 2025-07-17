@@ -105,15 +105,31 @@ jobs:
         run: echo "✔ Desplegado en entorno de pruebas (simulado)"
 
 
-  deploy-prod:
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Simular despliegue en producción
-        run: echo "✔ Desplegado en producción (simulado)"
+    deploy-prod:
+      needs: deploy-staging
+      runs-on: ubuntu-latest
+      if: github.ref == 'refs/heads/main'
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@v3
 
-      - name: Simular monitoreo post-deploy
-        run: |
-          echo "🔍 Iniciando monitoreo post-despliegue..."
-          echo "Simulación de logs, métricas y alertas generadas automáticamente."
+        - name: Simular despliegue en producción
+          run: echo "✔ Desplegado en producción (simulado)"
+
+        - name: Simular monitoreo post-deploy
+          run: |
+            echo "🔍 Iniciando monitoreo post-despliegue..."
+            echo "Simulación de logs, métricas y alertas generadas automáticamente."
+
+        - name: 🔧 Construir imagen Docker (simulación)
+          run: |
+            echo "🚀 Construyendo imagen Docker..."
+            docker build -t restcrud-app:latest .
+        
+        - name: 🧪 Ejecutar contenedor (simulación)
+          run: |
+            echo "🧪 Iniciando contenedor para prueba (simulada)..."
+            docker run -d -p 3000:3000 --name restcrud-sim restcrud-app:latest
+            sleep 5
+            echo "✅ Contenedor levantado (simulado)"
+            docker ps
