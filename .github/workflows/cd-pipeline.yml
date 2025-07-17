@@ -71,7 +71,7 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
-      
+
       - name: Save Trivy result to file
         run: trivy fs . > trivy-results.txt || true
 
@@ -132,6 +132,18 @@ jobs:
           echo "✅ Contenedor levantado (simulado)"
           docker ps
 
+  scan-docker-image:
+    needs: deploy-prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Configurar Docker (reconstrucción de imagen para escaneo)
+        run: |
+          echo "🔧 Reconstruyendo imagen Docker para escaneo..."
+          docker build -t restcrud-app:latest .
+
       - name: 🛡️ Escanear imagen Docker con Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -142,6 +154,7 @@ jobs:
 
       - name: Guardar reporte Trivy de la imagen
         run: |
+          echo "💾 Guardando resultado del escaneo..."
           trivy image --format table --severity CRITICAL,HIGH restcrud-app:latest > trivy-docker-image-report.txt || true
 
       - name: Subir reporte Trivy del contenedor
